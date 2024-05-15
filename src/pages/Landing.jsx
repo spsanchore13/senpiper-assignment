@@ -45,25 +45,60 @@ const Landing = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setFormData({ ...formData, [name]: value });
-    setFormErrors({ ...formErrors, [name]: false });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let hasErrors = false;
+
     const newErrors = { ...formErrors };
 
-    // Check for empty fields
-    Object.keys(formData).forEach((key) => {
-      if (formData[key] === "") {
-        newErrors[key] = true;
-        hasErrors = true;
-      }
-    });
+    const customerNameRegex = /^[a-zA-Z\s]+$/;
+    if (
+      !customerNameRegex.test(formData.customerName) ||
+      formData.customerName.length < 3
+    ) {
+      newErrors.customerName = true;
+    } else {
+      newErrors.customerName = false;
+    }
 
-    if (hasErrors) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = true;
+    } else {
+      newErrors.email = false;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = true;
+    } else {
+      newErrors.phone = false;
+    }
+
+    if (!formData.serviceQuality) {
+      newErrors.serviceQuality = true;
+    }
+    if (!formData.beverageQuality) {
+      newErrors.beverageQuality = true;
+    }
+    if (!formData.restaurantCleanliness) {
+      newErrors.restaurantCleanliness = true;
+    }
+    if (!formData.overallExperience) {
+      newErrors.overallExperience = true;
+    }
+
+    if (
+      newErrors.customerName ||
+      newErrors.email ||
+      newErrors.phone ||
+      newErrors.serviceQuality ||
+      newErrors.beverageQuality ||
+      newErrors.restaurantCleanliness ||
+      newErrors.overallExperience
+    ) {
       setFormErrors(newErrors);
     } else {
       setFormData({
@@ -80,7 +115,15 @@ const Landing = () => {
       formData.id = feedbacks.length + 1;
       feedbacks.push(formData);
       localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
-
+      setFormErrors({
+        customerName: false,
+        email: false,
+        phone: false,
+        serviceQuality: false,
+        beverageQuality: false,
+        restaurantCleanliness: false,
+        overallExperience: false,
+      });
       setSubmitted(true);
     }
   };
@@ -140,21 +183,24 @@ const Landing = () => {
                   />
                   {formErrors.customerName && (
                     <FormErrorMessage>
-                      Customer name is required
+                      Customer name should have minimum 3 chars ans should not
+                      contain number.
                     </FormErrorMessage>
                   )}
                 </FormControl>
                 <FormControl isRequired isInvalid={formErrors.email}>
                   <FormLabel>Email</FormLabel>
                   <Input
-                    type="email"
+                    type="text"
                     placeholder="Email..."
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
                   />
                   {formErrors.email && (
-                    <FormErrorMessage>Email is required</FormErrorMessage>
+                    <FormErrorMessage>
+                      Please enter a valid email.
+                    </FormErrorMessage>
                   )}
                 </FormControl>
 
@@ -168,7 +214,9 @@ const Landing = () => {
                     onChange={handleInputChange}
                   />
                   {formErrors.phone && (
-                    <FormErrorMessage>Phone is required</FormErrorMessage>
+                    <FormErrorMessage>
+                      Phone number should have 10 digits.
+                    </FormErrorMessage>
                   )}
                 </FormControl>
               </SimpleGrid>
@@ -178,6 +226,9 @@ const Landing = () => {
                   <FormLabel>
                     Please rate the quality of service you received from your
                     host.
+                    <Text as="span" color="red">
+                      *
+                    </Text>
                   </FormLabel>
                   <HStack spacing={10} onChange={handleInputChange}>
                     <Checkbox
@@ -213,7 +264,10 @@ const Landing = () => {
 
                 <FormControl isInvalid={formErrors.beverageQuality}>
                   <FormLabel>
-                    Please rate the quality of your beverage.
+                    Please rate the quality of your beverage.{" "}
+                    <Text as="span" color="red">
+                      *
+                    </Text>
                   </FormLabel>
                   <HStack spacing={10} onChange={handleInputChange}>
                     <Checkbox
@@ -249,7 +303,10 @@ const Landing = () => {
 
                 <FormControl isInvalid={formErrors.restaurantCleanliness}>
                   <FormLabel>
-                    Please rate the cleanliness of restaurant.
+                    Please rate the cleanliness of restaurant.{" "}
+                    <Text as="span" color="red">
+                      *
+                    </Text>
                   </FormLabel>
                   <HStack spacing={10} onChange={handleInputChange}>
                     <Checkbox
@@ -285,7 +342,10 @@ const Landing = () => {
 
                 <FormControl isInvalid={formErrors.overallExperience}>
                   <FormLabel>
-                    Please rate your overall dining experience.
+                    Please rate your overall dining experience.{" "}
+                    <Text as="span" color="red">
+                      *
+                    </Text>
                   </FormLabel>
                   <HStack spacing={10} onChange={handleInputChange}>
                     <Checkbox

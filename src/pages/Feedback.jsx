@@ -54,7 +54,6 @@ const Feedback = () => {
     delayedSearch(value);
   };
 
-  console.log(searchQuery);
   const filteredFeedbackData = feedbackData.filter((feedback) =>
     Object.values(feedback).some(
       (value) =>
